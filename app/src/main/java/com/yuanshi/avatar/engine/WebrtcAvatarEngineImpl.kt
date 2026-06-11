@@ -128,11 +128,15 @@ class WebrtcAvatarEngineImpl(private val context: Context) : DigitalHumanEngine 
                 textSize = 18f
                 gravity = Gravity.CENTER
             }
-            addView(textView, FrameLayout.LayoutParams(
+            val density = context.resources.displayMetrics.density
+            val textLp = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER
-            ))
+                Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            ).apply {
+                bottomMargin = (200 * density).toInt()  // 距底部 200dp，位于按钮区域上方
+            }
+            addView(textView, textLp)
         }
         outer.addView(placeholder)
         placeholderContainer = placeholder
