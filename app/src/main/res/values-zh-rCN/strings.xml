@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">原世数字人</string>
+    <string name="play">播放</string>
+    <string name="base_config_url">基础配置地址:</string>
+    <string name="model_url">模型地址:</string>
+    <string name="more">更多</string>
+    <string name="base_config_cannot_be_empty">基础配置地址不能为空</string>
+    <string name="model_url_cannot_be_empty">模型地址不能为空</string>
+    <string name="loading">加载中…</string>
+    <string name="mute">静音</string>
+    <string name="ai_tips">本内容由 AI 生成，仅供参考</string>
+    <string name="support_actions">支持的操作:</string>
+    <string name="record">录音</string>
+    <string name="play_pcm">播放 PCM 流</string>
+    <string name="play_wav">播放 WAV 文件</string>
+    <string name="random_play_action">随机动作</string>
+    <string name="touch_me_record">按住录音</string>
+    <string name="need_permission_continue">需要授权才能继续使用</string>
+    <string name="play_stop">停止播放</string>
+    <string name="main_download_tips">下载可能较慢，可考虑使用代理或缓存到自己的存储服务</string>
+    <string name="debug_message">调试信息</string>
+
+    <!-- 录音模式 -->
+    <string name="listening_mode_title">录音模式</string>
+    <string name="mode_push_to_talk">按住说话</string>
+    <string name="mode_toggle">持续监听</string>
+    <string name="mode_wake_word">唤醒词模式</string>
+    <string name="listening_mode_ptt">按住录音，松开发送</string>
+    <string name="listening_mode_listen">持续监听，说话后自动发送</string>
+    <string name="listening_mode_wake_word">说"原宝"唤醒，语音交互后继续监听</string>
+    <string name="wake_word_listening">唤醒中…</string>
+    <string name="cancel">取消</string>
+    <string name="show_play_buttons">显示 WAV/PCM 播放按钮</string>
+    <string name="select_wav_file">选择 WAV 音频文件</string>
+    <string name="select_pcm_file">选择 PCM 音频文件</string>
+</resources>

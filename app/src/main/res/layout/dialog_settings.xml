@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 录音模式 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/listening_mode_title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/rgListeningMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <RadioButton
+                android:id="@+id/rbPushToTalk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_push_to_talk"
+                android:paddingVertical="6dp" />
+
+            <RadioButton
+                android:id="@+id/rbToggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_toggle"
+                android:paddingVertical="6dp" />
+
+            <RadioButton
+                android:id="@+id/rbWakeWord"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_wake_word"
+                android:paddingVertical="6dp" />
+
+        </RadioGroup>
+
+        <!-- 分割线 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="16dp" />
+
+        <!-- VAD 灵敏度 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vad_sensitivity_title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/rgVadSensitivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <RadioButton
+                android:id="@+id/rbVadLow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vad_sensitivity_low"
+                android:paddingVertical="4dp"
+                android:textSize="13sp" />
+
+            <RadioButton
+                android:id="@+id/rbVadNormal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vad_sensitivity_normal"
+                android:paddingVertical="4dp"
+                android:textSize="13sp" />
+
+            <RadioButton
+                android:id="@+id/rbVadHigh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vad_sensitivity_high"
+                android:paddingVertical="4dp"
+                android:textSize="13sp" />
+
+        </RadioGroup>
+
+        <!-- 分割线 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 数字人引擎 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/avatar_engine_title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/rgAvatarEngine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp">
+
+            <RadioButton
+                android:id="@+id/rbEngineDuix3d"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/avatar_engine_duix_3d"
+                android:paddingVertical="6dp" />
+
+            <RadioButton
+                android:id="@+id/rbEngineVideoAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/avatar_engine_video"
+                android:paddingVertical="6dp" />
+
+            <RadioButton
+                android:id="@+id/rbEngineWebrtcAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/avatar_engine_webrtc"
+                android:paddingVertical="6dp" />
+
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/avatar_engine_restart_hint"
+            android:textSize="11sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="12dp" />
+
+        <!-- DUIX 3D 人物模型（仅 DUIX 3D 模式） -->
+        <LinearLayout
+            android:id="@+id/llDuixModel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/duix_model_title"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/duix_model_hint"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp" />
+
+            <RadioGroup
+                android:id="@+id/rgDuixModel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp" />
+
+        </LinearLayout>
+
+        <!-- 后端数字人引擎模式（仅视频数字人模式） -->
+        <LinearLayout
+            android:id="@+id/llBackendProvider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="后端引擎模式"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="选择视频数字人的后端处理引擎，切换后自动重启"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp" />
+
+            <RadioGroup
+                android:id="@+id/rgBackendProvider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <RadioButton
+                    android:id="@+id/rbProviderMusetalk"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MuseTalk（实时，～50ms/帧）"
+                    android:paddingVertical="4dp"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/rbProviderWav2lip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wav2Lip（高质量，～99秒）"
+                    android:paddingVertical="4dp"
+                    android:textSize="13sp" />
+
+                <RadioButton
+                    android:id="@+id/rbProviderMock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Mock（模拟，仅测试）"
+                    android:paddingVertical="4dp"
+                    android:textSize="13sp" />
+
+            </RadioGroup>
+        </LinearLayout>
+
+        <!-- 分割线 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 后端地址 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_backend_url"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/etBackendUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="http://192.168.1.100:8000/api/v1"
+            android:inputType="textUri"
+            android:singleLine="true"
+            android:padding="10dp"
+            android:background="@drawable/border_primary"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="修改后需重启数字人才能生效"
+            android:textSize="11sp"
+            android:textColor="@color/text_secondary" />
+
+        <!-- 分割线 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginVertical="12dp" />
+
+        <!-- 显示 WAV/PCM 播放按钮 -->
+        <CheckBox
+            android:id="@+id/cbShowPlayButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/show_play_buttons"
+            android:paddingVertical="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>

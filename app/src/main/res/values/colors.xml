@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    原世数字人 · 主题色
+    暖阳琥珀方案：
+    - 主色：暖琥珀橙 — 温暖、亲切
+    - 辅色：夜空深蓝 — 深邃、科技
+    - 点缀：柔和金 — 智慧、品质
+    - 背景：暖白 — 柔和护眼
+-->
+<resources>
+    <!-- 主色调 -->
+    <color name="primary">#E07020</color>
+    <color name="primary_dark">#C05A10</color>
+    <color name="primary_light">#F0A060</color>
+
+    <!-- 辅色 -->
+    <color name="secondary">#1A1A2E</color>
+    <color name="secondary_light">#2D2D4E</color>
+
+    <!-- 点缀色 -->
+    <color name="accent">#F5C518</color>
+    <color name="accent_light">#FFD740</color>
+
+    <!-- 功能色 -->
+    <color name="safe_green">#4CAF50</color>
+    <color name="warning_yellow">#FF9800</color>
+    <color name="error_red">#E53935</color>
+    <color name="info_blue">#42A5F5</color>
+
+    <!-- 背景色 -->
+    <color name="background_warm">#F5F0EB</color>
+    <color name="background_dark">#121220</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_dark">#1E1E32</color>
+
+    <!-- 文字色 -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_on_dark">#E0E0E0</color>
+
+    <!-- 透明色 -->
+    <color name="shadow">#1A000000</color>
+    <color name="overlay">#80000000</color>
+
+    <!-- 基础色（兼容旧布局） -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary_99">#99E07020</color>
+</resources>

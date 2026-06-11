@@ -1,0 +1,4 @@
+include ':duix-sdk'
+include ':app'
+
+rootProject.name = "Yuanshi-Mobile"

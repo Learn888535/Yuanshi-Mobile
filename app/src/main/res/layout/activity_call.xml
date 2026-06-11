@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <FrameLayout
+        android:id="@+id/avatarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/tvDebug"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:background="#66000000"
+        android:padding="6dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+
+
+    <ImageButton
+        android:id="@+id/btnSettings"
+        android:src="@android:drawable/ic_menu_manage"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/settings"
+        android:layout_margin="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/switchMute"
+        app:layout_constraintBottom_toBottomOf="@+id/switchMute"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchMute"
+        android:text="@string/mute"
+        android:layout_margin="12dp"
+        android:enabled="false"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvMotionTips"
+        android:visibility="invisible"
+        android:layout_margin="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/support_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMotion"
+        app:layout_constraintTop_toBottomOf="@+id/tvMotionTips"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="12dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnRandomMotion"
+        android:text="@string/random_play_action"
+        android:textSize="13sp"
+        android:visibility="invisible"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/rvMotion"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/shape_common_btn"
+        android:layout_margin="6dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvAITips"
+        android:text="@string/ai_tips"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:shadowColor="#1a1e1f"
+        android:shadowRadius="5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="12dp"
+        />
+
+    <Button
+        android:id="@+id/btnRecord"
+        android:text="@string/record"
+        android:enabled="false"
+        android:visibility="gone"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:background="@drawable/shape_common_btn"
+        android:layout_margin="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnPlayWAV"/>
+
+    <Button
+        android:id="@+id/btnPlayWAV"
+        android:text="@string/play_wav"
+        android:background="@drawable/shape_common_btn"
+        android:layout_margin="6dp"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnPlayPCM"/>
+
+    <Button
+        android:id="@+id/btnPlayPCM"
+        android:text="@string/play_pcm"
+        android:background="@drawable/shape_common_btn"
+        android:layout_margin="6dp"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnStopPlay"/>
+
+    <Button
+        android:id="@+id/btnStopPlay"
+        android:text="@string/play_stop"
+        android:paddingHorizontal="6dp"
+        android:background="@drawable/shape_common_btn"
+        android:layout_margin="6dp"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tvAITips"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,46 @@
+# Android built artifacts
+*.apk
+*.aab
+*.ap_
+*.aab_
+*.dex
+*.class
+bin/
+gen/
+out/
+
+# Gradle files
+.gradle/
+build/
+*/build/
+local.properties
+*.iml
+.idea/
+*.hprof
+*.kotlin_module
+
+# NDK build artifacts
+.externalNativeBuild/
+.cxx/
+*/build/intermediates/
+
+# Large DUIX model binaries (>100MB each, use Git LFS or manual download)
+app/src/main/assets/duix/model/*/dh_model.b
+app/src/main/assets/duix/model/gj_dh_res/wenet.o
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# Claude Code
+.claude/
+
+# Large build output
+yuanshi_fixed.apk

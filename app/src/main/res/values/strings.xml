@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">原世数字人</string>
+
+    <!-- 通用 -->
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="save">保存</string>
+    <string name="close">关闭</string>
+    <string name="confirm">确认</string>
+    <string name="retry">重试</string>
+    <string name="loading">加载中…</string>
+    <string name="no_content">暂无内容</string>
+
+    <!-- 主页 -->
+    <string name="start_chat">开始对话</string>
+    <string name="select_model">选择模型</string>
+    <string name="settings">设置</string>
+    <string name="mute">静音</string>
+
+    <!-- 数字人交互 -->
+    <string name="press_to_hold">按住说话</string>
+    <string name="release_to_send">松开发送</string>
+    <string name="listening_active">监听中…</string>
+    <string name="realtime_thinking">思考中…</string>
+    <string name="interrupt">打断</string>
+
+    <!-- 录音模式 -->
+    <string name="listening_mode_title">录音模式</string>
+    <string name="mode_push_to_talk">按住说话</string>
+    <string name="mode_toggle">持续监听</string>
+    <string name="mode_wake_word">唤醒词模式</string>
+    <string name="listening_mode_ptt">按住录音，松开发送</string>
+    <string name="listening_mode_listen">持续监听，说话后自动发送</string>
+    <string name="listening_mode_wake_word">说"原宝"唤醒，语音交互后继续监听</string>
+    <string name="wake_word_listening">唤醒中…</string>
+    <string name="wake_word_mode">唤醒词模式</string>
+
+    <!-- 连接状态 -->
+    <string name="connected">已连接</string>
+    <string name="disconnected">未连接</string>
+    <string name="reconnecting">重连中…</string>
+
+    <!-- 设置页 -->
+    <string name="setting_backend_url">后端地址</string>
+    <string name="setting_voice">音色选择</string>
+    <string name="setting_alert_sound">告警声音</string>
+    <string name="setting_about">关于</string>
+    <string name="setting_version">版本</string>
+
+    <!-- 权限 -->
+    <string name="permission_microphone">需要麦克风权限才能进行语音交互</string>
+    <string name="permission_camera">需要相机权限才能拍照</string>
+
+    <!-- VAD 灵敏度设置 -->
+    <string name="vad_sensitivity_title">VAD 灵敏度</string>
+    <string name="vad_sensitivity_low">低（安静环境，减少误触发）</string>
+    <string name="vad_sensitivity_normal">中（默认）</string>
+    <string name="vad_sensitivity_high">高（嘈杂环境，更快响应）</string>
+
+    <!-- DUIX 3D 人物模型 -->
+    <string name="duix_model_title">DUIX 3D 人物模型</string>
+    <string name="duix_model_hint">选择 3D 数字人的人物形象，切换后自动重启</string>
+    <string name="duix_model_empty">未检测到可用模型</string>
+
+    <!-- 数字人引擎设置 -->
+    <string name="avatar_engine_title">数字人引擎</string>
+    <string name="avatar_engine_duix_3d">3D 数字人（实时）</string>
+    <string name="avatar_engine_video">视频数字人（Wav2Lip，约2分钟延迟）</string>
+    <string name="avatar_engine_webrtc">实时视频数字人（MuseTalk，流式）</string>
+    <string name="avatar_engine_restart_hint">切换后需重启数字人才能生效</string>
+
+    <!-- 旧版兼容 -->
+    <string name="play">播放</string>
+    <string name="record">录音</string>
+    <string name="play_pcm">播放 PCM</string>
+    <string name="play_wav">播放 WAV</string>
+    <string name="debug_message">调试信息</string>
+    <string name="ptt_hold_to_talk">按住说话</string>
+    <string name="base_config_url">配置地址:</string>
+    <string name="model_url">模型地址:</string>
+    <string name="more">更多</string>
+    <string name="base_config_cannot_be_empty">配置地址不能为空</string>
+    <string name="model_url_cannot_be_empty">模型地址不能为空</string>
+    <string name="ai_tips">本内容由 AI 生成，仅供参考</string>
+    <string name="support_actions">支持的操作:</string>
+    <string name="random_play_action">随机动作</string>
+    <string name="touch_me_record">按住录音</string>
+    <string name="need_permission_continue">需要授权才能继续使用</string>
+    <string name="play_stop">停止播放</string>
+    <string name="main_download_tips">下载可能较慢，可考虑使用代理或缓存到自己的存储服务</string>
+    <string name="show_play_buttons">显示 WAV/PCM 播放按钮</string>
+    <string name="select_wav_file">选择 WAV 音频文件</string>
+    <string name="select_pcm_file">选择 PCM 音频文件</string>
+</resources>
