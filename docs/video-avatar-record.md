@@ -70,6 +70,26 @@ VoiceSessionManager 收到 LLM 回复文本
 - 通过 `TextureView` 的 `layoutParams` + `Gravity.CENTER` 实现
 - 不依赖 `setTransform` 矩阵（已测试不可靠）
 
+### 2.4 占位提示文字
+
+视频生成期间，引擎在 `avatarContainer` 上覆盖一层半透明文字提示，显示当前状态：
+
+| 文字内容 | 触发时机 | 来源 |
+|---------|---------|------|
+| `"正在生成视频...\n\"你好\""` | `stopPush()` 发送 speak 请求后 | `VideoAvatarEngineImpl.kt:206` |
+| `"视频生成失败: HTTP 404"` | speak 请求返回错误状态码 | `VideoAvatarEngineImpl.kt:235` |
+| `"视频生成异常: ..."` | speak 请求抛出异常 | `VideoAvatarEngineImpl.kt:239` |
+| `"语音播报中...（后端未配置视频引擎）"` | 后端为 mock 模式时 | `VideoAvatarEngineImpl.kt:231` |
+| `"未获取到回复内容"` | replyText 为空时 | `VideoAvatarEngineImpl.kt:172` |
+| `"无法连接后端服务器\n请检查网络和后端地址"` | 创建后端会话失败 | `VideoAvatarEngineImpl.kt:183` |
+| `"实时视频数字人引擎\n等待视频流..."` | WEBRTC_AVATAR 初始状态 | `WebrtcAvatarEngineImpl.kt:126` |
+| `"实时视频数字人引擎\n播报中...（无视频画面）"` | WEBRTC_AVATAR 播报中 | `WebrtcAvatarEngineImpl.kt:218` |
+
+**位置调整**（2026-06-11）：
+- 原位置：屏幕正中央（`Gravity.CENTER`）— 遮挡数字人面部
+- 现位置：屏幕底部按钮区域上方（`Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL` + `bottomMargin=200dp`）
+- 涉及文件：`VideoAvatarEngineImpl.kt`、`WebrtcAvatarEngineImpl.kt`
+
 ---
 
 ## 三、WebrtcAvatarEngineImpl（实时视频数字人）
