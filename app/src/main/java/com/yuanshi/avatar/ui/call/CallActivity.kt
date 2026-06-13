@@ -12,6 +12,7 @@ import com.yuanshi.avatar.service.RealtimeState
 import com.yuanshi.avatar.service.DeviceController
 import com.yuanshi.avatar.service.PushWebSocketClient
 import com.yuanshi.avatar.service.WakeWordDetector
+import com.yuanshi.avatar.service.PcmResampler
 import com.yuanshi.avatar.R
 import com.yuanshi.avatar.audio.AudioRecorder
 import com.yuanshi.avatar.databinding.ActivityCallBinding
@@ -1357,16 +1358,21 @@ class CallActivity : BaseActivity() {
             return
         }
         try {
-            val pcmData = Base64.decode(audioBase64, Base64.DEFAULT)
-            if (pcmData.isEmpty()) {
+            val pcmData24000 = Base64.decode(audioBase64, Base64.DEFAULT)
+            if (pcmData24000.isEmpty()) {
                 Log.e(TAG, "decoded PCM is empty")
                 binding.btnRecord.postDelayed({
                     if (isListening && listeningMode == ListeningMode.WAKE_WORD) enterWakeWordMode()
                 }, 500)
                 return
             }
-            // 构造 WAV 文件头 + PCM 数据
-            val sampleRate = 24000
+            // DUIX playAudio() 内部剥离 WAV 头后通过 pushPcm() 以 16kHz 播放，
+            // 但后端 TTS 返回的 PCM 是 24000Hz。必须先下采样再写入 WAV 文件。
+            val pcmData = PcmResampler.downsamplePcm16BitMono(pcmData24000, 24000, 16000)
+            Log.d(TAG, "wake response PCM: ${pcmData24000.size}→${pcmData.size} bytes (24000→16000 Hz)")
+
+            // 构造 WAV 文件头 + PCM 数据（16000Hz）
+            val sampleRate = 16000
             val channels: Short = 1
             val bitsPerSample: Short = 16
             val dataSize = pcmData.size
@@ -1393,7 +1399,7 @@ class CallActivity : BaseActivity() {
                 this[20] = 1; this[21] = 0
                 // channels
                 this[22] = channels.toByte(); this[23] = 0
-                // sample rate
+                // sample rate 16000
                 this[24] = (sampleRate and 0xFF).toByte()
                 this[25] = ((sampleRate shr 8) and 0xFF).toByte()
                 this[26] = ((sampleRate shr 16) and 0xFF).toByte()

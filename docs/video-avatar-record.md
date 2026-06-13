@@ -261,5 +261,69 @@ Backend (care-monitor-backend)
 │   │   └── ...
 │   └── ...
 ├── VOICE_INTERACTION.md                       ← 完整协议文档
+├── API接口文档.txt                             ← REST API 详细参考
+├── CHANGELOG.md                               ← 变更历史
+├── static/
+│   ├── index.html                             ← Dashboard SPA
+│   ├── js/app.js                              ← Dashboard 前端逻辑
+│   ├── avatar_videos/                         ← 生成的视频文件
+│   │   └── audio/                             ← TTS 音频中间文件
+│   └── reference_videos/                      ← 参考视频文件
+├── app/api/dashboard/
+│   └── avatar.py                              ← Dashboard 数字人管理 API（新建）
 └── README.md                                   ← 项目概述
 ```
+
+---
+
+## 八、Dashboard 数字人管理页面
+
+### 8.1 概述
+
+Dashboard（Web 管理后台）新增"数字人管理"页面，通过侧边栏 🧑 导航访问。提供完整的数字人相关管理功能，包括引擎切换、参考视频管理、文本生成视频、视频和音频文件管理。
+
+### 8.2 页面功能
+
+| 区域 | 功能 | 说明 |
+|------|------|------|
+| ⚙️ 引擎状态 | 查看当前引擎 | 显示当前 Provider（Mock/MuseTalk/Wav2Lip）及可用引擎列表 |
+| | 切换引擎 | 下拉框选择 → 点击"切换" |
+| 🎥 参考视频 | 查看状态 | 显示已配置/未配置，含文件名和大小 |
+| | 上传 | 选择视频文件 → 点击"上传参考视频" |
+| | 删除 | 点击"删除"按钮 |
+| 🎬 文本生成视频 | 输入文字 | 多行文本输入框 |
+| | 生成视频 | 调用 speak 端点，等待返回 video_url |
+| | 播放 | 页面内嵌 video 播放器 |
+| 📋 已生成的视频 | 列表 | 表格列出所有 MP4（文件名/大小/引擎/时间） |
+| | 播放 | 弹窗播放视频 |
+| | 下载 | 直接下载文件 |
+| | 删除/清空全部 | 支持单条删除和批量清空 |
+| 🔊 TTS 音频文件 | 列表 | 表格列出 WAV 文件（文件名/大小/时间） |
+| | 删除/清空全部 | 清空视频时自动级联清理音频 |
+
+### 8.3 Dashboard API 端点
+
+基础路径：`/api/v1/dashboard/avatar`（JWT 认证）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `GET` | `/status` | 引擎状态 + 参考视频信息 |
+| `PUT` | `/provider` | 切换引擎模式 |
+| `POST` | `/reference-video` | 上传参考视频 |
+| `DELETE` | `/reference-video` | 删除参考视频 |
+| `POST` | `/generate` | 文生视频 |
+| `GET` | `/videos` | 列出生成视频 |
+| `DELETE` | `/videos/{filename}` | 删除单个视频 |
+| `DELETE` | `/videos` | 清空全部视频（含音频） |
+| `GET` | `/audio` | 列出 TTS 音频 |
+| `DELETE` | `/audio/{filename}` | 删除单个音频 |
+| `DELETE` | `/audio` | 清空全部音频 |
+
+### 8.4 关键实现文件
+
+| 文件 | 说明 |
+|------|------|
+| `app/api/dashboard/avatar.py` | 11 个 JWT 保护端点 |
+| `app/services/avatar_service.py` | 新增 7 个管理方法 |
+| `static/js/app.js` | `renderAvatar()` 渲染方法 + 操作处理器 |
+| `static/index.html` | 侧边栏导航 + 页面容器 |

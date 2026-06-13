@@ -392,10 +392,6 @@ class PushWebSocketClient(
                 // 推送给 DUIX
                 engine.startPush()
                 try {
-                    // 初始延迟 50ms，给 DUIX 内部 AudioTrack 初始化时间
-                    // （防止 AudioTrack 未就绪时涌入大量数据导致无声）
-                    Thread.sleep(50)
-
                     var cursor = 0
                     while (cursor < pcm16k.size) {
                         val end = minOf(cursor + PUSH_FRAME_SIZE, pcm16k.size)
@@ -472,9 +468,6 @@ class PushWebSocketClient(
 
                 engine.startPush()
                 try {
-                    // 初始延迟 50ms，给 DUIX 内部 AudioTrack 初始化时间
-                    Thread.sleep(50)
-
                     var cursor = 0
                     while (cursor < pcm16k.size) {
                         val end = minOf(cursor + PUSH_FRAME_SIZE, pcm16k.size)
