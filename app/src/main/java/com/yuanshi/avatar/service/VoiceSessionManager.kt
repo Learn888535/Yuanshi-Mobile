@@ -888,12 +888,26 @@ private class StreamingPusher(
     private val callback: RealtimeSessionManager.Callback
 ) {
     private val inputBuf = ByteArrayOutputStream()
-    /** 防止重复调用 engine.startPush()（同一个会话中可能收到多个 tts_start） */
+    /**
+     * 防止同一个 WebSocket 会话中多个 tts_start 重复创建 DUIX session。
+     *
+     * 工具调用场景下，后端会在同一个 WebSocket 连接中发送两个 tts_start：
+     *   1. 提示语（如"好的，正在查询..."）
+     *   2. 工具结果（如新闻内容）
+     *
+     * 如果第二次 tts_start 再次调用 startPush()，DUIX SDK 会 finsession(old) +
+     * newsession()，新 session 需要约 700-800ms 才能产出第一帧口型数据，
+     * 导致提示语到新闻内容切换期间嘴型不动（声音已开始播但口型未同步）。
+     *
+     * 由于 stopPush() 只在 WebSocket 会话结束时调用一次（不在两个 TTS 流之间），
+     * 因此用 started 标志跳过第二次 startPush()，让第二段 PCM 继续流入同一个 session，
+     * 避免 session 重建开销。
+     */
     private var started = false
 
     fun start() {
         if (started) {
-            callback.onInfo(">>> STREAM: already started, skipping startPush()")
+            callback.onInfo(">>> STREAM: already started, keeping session alive for second TTS")
             return
         }
         callback.onInfo(">>> STREAM: calling engine.startPush()")

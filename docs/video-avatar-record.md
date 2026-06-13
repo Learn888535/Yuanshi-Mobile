@@ -229,7 +229,9 @@ CallActivity.restartEngine(type: DigitalHumanEngineType)
 | 切换引擎后"未配置" | `_preprocess_event` 未重置导致状态污染 | 已修复 |
 | 播报吞字 | TTS 24kHz→16kHz 重采样缺失 | 已修复（scipy resample_poly）|
 | 双 /api/v1 前缀 | Android URL 拼接与 backendUrl 重复 | 已修复（`getCleanBackendUrl()` + 兼容路由）|
-| 工具调用后口型偏移 | 双 TTS 流重复 `startPush()` 导致 DUIX SDK 内部状态重置 | 已修复（`StreamingPusher` started 幂等标志）|
+| 工具调用后口型偏移 | 双 TTS 流重复 `startPush()` 导致 DUIX SDK 创建新 session，新 session 需 ~700-800ms 才出第一帧口型数据 | 已修复（`StreamingPusher` started 跳过第二次 `startPush()`，同 session 续流）|
+| 工具调用交接处口型仓促 | 即使同 session 续流，工具执行间隙（数秒无 PCM）后渲染器空闲恢复时有短暂延迟 | **残余**（DUIX SDK 限制，需 SDK 优化 `runfirst()`）|
+| 首次"你好"嘴型不动 | NCNN 冷启动 — ONNX 首次推理初始化开销导致短音频来不及出 ready 帧 | 已修复（引擎 init 后后台推送 600ms 近静音 PCM 预热）|
 | 视频引擎推送播报跳过 | `PushWebSocketClient` 检测到 VideoAvatarEngine 时直接跳过播报 | 已修复（AudioTrack 直接播放，两处推帧路径均生效）|
 | TOGGLE 模式无限视频循环 | `pendingReplyText` 为空时回退默认文字导致"你好，欢迎使用"视频无限重复 | 已修复（移除 `ifBlank` 回退，空文字跳过 speak）|
 

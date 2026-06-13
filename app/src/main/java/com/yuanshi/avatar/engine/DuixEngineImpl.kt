@@ -9,6 +9,7 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.Log
 import android.view.ViewGroup
+import java.util.concurrent.Executors
 
 /**
  * DUIX SDK 引擎实现
@@ -27,6 +28,13 @@ class DuixEngineImpl(private val context: Context) : DigitalHumanEngine {
     private var renderer: DUIXRenderer? = null
     private var callback: DigitalHumanEngine.Callback? = null
     private var supportedMotions: List<String> = emptyList()
+
+    /** NCNN 冷启动预热 */
+    private val warmupExecutor = Executors.newSingleThreadExecutor()
+    @Volatile
+    private var warmupDone = false
+    @Volatile
+    private var isWarmupRunning = false
 
     override val isReady: Boolean
         get() = duix?.isReady ?: false
@@ -65,14 +73,50 @@ class DuixEngineImpl(private val context: Context) : DigitalHumanEngine {
                     val motions = extractMotions(info as? ModelInfo)
                     supportedMotions = motions
                     Log.i(TAG, "CALLBACK_EVENT_INIT_READY: $info")
+
+                    // NCNN 冷启动预热：在回调给 CallActivity 之前，
+                    // 后台推送 600ms 近静音 PCM 触发首次 ONNX 推理。
+                    // 这样用户说第一句话时 NCNN 已完成初始化，嘴型同步立即生效。
+                    isWarmupRunning = true
+                    warmupExecutor.submit {
+                        try {
+                            Log.i(TAG, "warmup: 开始 NCNN 冷启动预热...")
+                            duix?.startPush()
+                            // 推送 6 × 100ms = 600ms 近静音 PCM
+                            repeat(6) {
+                                if (!isWarmupRunning) return@submit
+                                duix?.pushPcm(WARMUP_SILENCE)
+                            }
+                            duix?.stopPush()
+                            warmupDone = true
+                            Log.i(TAG, "warmup: NCNN 预热完成")
+                        } catch (e: Exception) {
+                            Log.w(TAG, "warmup: 预热异常（不影响后续使用）", e)
+                        } finally {
+                            isWarmupRunning = false
+                        }
+                    }
+
                     callback.onReady(motions)
                 }
                 Constant.CALLBACK_EVENT_INIT_ERROR -> {
                     Log.e(TAG, "CALLBACK_EVENT_INIT_ERROR: $msg")
                     callback.onInitError(msg.orEmpty())
                 }
-                Constant.CALLBACK_EVENT_AUDIO_PLAY_START -> callback.onAudioPlayStart()
-                Constant.CALLBACK_EVENT_AUDIO_PLAY_END -> callback.onAudioPlayEnd()
+                Constant.CALLBACK_EVENT_AUDIO_PLAY_START -> {
+                    if (isWarmupRunning) {
+                        Log.d(TAG, "忽略预热期的 AUDIO_PLAY_START")
+                    } else {
+                        callback.onAudioPlayStart()
+                    }
+                }
+                Constant.CALLBACK_EVENT_AUDIO_PLAY_END -> {
+                    if (isWarmupRunning) {
+                        Log.d(TAG, "忽略预热期的 AUDIO_PLAY_END")
+                    } else {
+                        callback.onAudioPlayEnd()
+                    }
+                }
                 Constant.CALLBACK_EVENT_AUDIO_PLAY_ERROR -> callback.onAudioPlayError(msg.orEmpty())
                 Constant.CALLBACK_EVENT_MOTION_START -> callback.onMotionStart()
                 Constant.CALLBACK_EVENT_MOTION_END -> callback.onMotionEnd()
@@ -136,6 +180,8 @@ class DuixEngineImpl(private val context: Context) : DigitalHumanEngine {
     }
 
     override fun release() {
+        isWarmupRunning = false
+        warmupExecutor.shutdownNow()
         duix?.release()
         duix = null
         renderer = null
@@ -162,5 +208,22 @@ class DuixEngineImpl(private val context: Context) : DigitalHumanEngine {
     companion object {
         private const val TAG = "DuixEngine"
         private const val GL_CONTEXT_VERSION = 2
+
+        /**
+         * 预热用近静音 PCM（100ms @ 16kHz = 1600 bytes = 800 shorts）
+         *
+         * 使用 +/-1~3 的非零值而非全零，避免 NCNN 内部可能的静音帧跳过逻辑。
+         * 此音量远低于人耳可感知阈值（-60dB 以下），播放时完全无声。
+         */
+        private val WARMUP_SILENCE: ByteArray = ByteArray(1600).apply {
+            val random = java.util.Random()
+            var i = 0
+            while (i < size) {
+                val sample = (random.nextInt(5) - 2).coerceIn(-3, 3).toShort()
+                this[i] = (sample.toInt() and 0xFF).toByte()
+                this[i + 1] = ((sample.toInt() shr 8) and 0xFF).toByte()
+                i += 2
+            }
+        }
     }
 }
