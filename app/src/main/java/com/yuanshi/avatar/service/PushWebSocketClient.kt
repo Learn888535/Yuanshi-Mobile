@@ -5,6 +5,10 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.AudioTrack
 import android.util.Base64
 import android.util.Log
 import com.yuanshi.avatar.engine.DigitalHumanEngine
@@ -339,15 +343,6 @@ class PushWebSocketClient(
                     return@execute
                 }
 
-                // VideoAvatarEngineImpl 将 pushPcm/stopPush 解释为"向后端发送 speak 请求生成视频"，
-                // 而非本地播放音频。推送 TTS（告警播报、跌倒询问）不需要生成视频，
-                // 跳过 push 避免触发不必要的视频生成。
-                if (engine is com.yuanshi.avatar.engine.VideoAvatarEngineImpl) {
-                    Log.w(TAG, "buffered playback: VideoAvatarEngine does not support push playback, skipping")
-                    resetStreamState()
-                    return@execute
-                }
-
                 val srcSampleRate = streamingSampleRate
 
                 // 等所有分块到齐
@@ -379,6 +374,15 @@ class PushWebSocketClient(
                 }
 
                 Log.d(TAG, "buffered playback: assembled ${fullPcm24k.size} bytes PCM (${srcSampleRate}Hz)")
+
+                // VideoAvatarEngineImpl 使用 AudioTrack 直接播放 PCM，
+                // 不经过 startPush/pushPcm/stopPush 路径（那会触发后端视频生成）。
+                if (engine is com.yuanshi.avatar.engine.VideoAvatarEngineImpl) {
+                    Log.w(TAG, "buffered playback: VideoAvatarEngine, using AudioTrack direct playback")
+                    playPcmViaAudioTrack(fullPcm24k, srcSampleRate)
+                    Log.i(TAG, "buffered playback finished (AudioTrack): '$streamingText'")
+                    return@execute
+                }
 
                 // 下采样 24kHz → 16kHz
                 val pcm16k = if (srcSampleRate == 16000) {
@@ -427,6 +431,47 @@ class PushWebSocketClient(
         resetStreamState()
     }
 
+    /**
+     * 通过 AudioTrack 直接播放 PCM 音频（不经过 DUIX push 路径）。
+     * 用于 VideoAvatarEngineImpl 模式下推送 TTS（告警播报、跌倒询问等）。
+     */
+    private fun playPcmViaAudioTrack(pcmData: ByteArray, sampleRate: Int) {
+        if (pcmData.isEmpty()) return
+        try {
+            val bufferSize = maxOf(
+                AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT),
+                pcmData.size
+            )
+            val audioTrack = AudioTrack(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build(),
+                AudioFormat.Builder()
+                    .setSampleRate(sampleRate)
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                    .build(),
+                bufferSize,
+                AudioTrack.MODE_STATIC,
+                AudioManager.AUDIO_SESSION_ID_GENERATE
+            )
+            audioTrack.write(pcmData, 0, pcmData.size)
+            audioTrack.play()
+
+            // 等待播放完成（计算 PCM 时长）
+            val durationMs = (pcmData.size.toLong() * 1000) / (sampleRate * 2)
+            val sleepMs = (durationMs + 100).coerceAtMost(30000L)  // 最多等 30 秒
+            Thread.sleep(sleepMs)
+
+            audioTrack.stop()
+            audioTrack.release()
+            Log.d(TAG, "playPcmViaAudioTrack: played ${pcmData.size} bytes @ ${sampleRate}Hz (${durationMs}ms)")
+        } catch (e: Exception) {
+            Log.e(TAG, "playPcmViaAudioTrack error: ${e.message}")
+        }
+    }
+
     // ── TTS 旧版兼容 ──
 
     private fun handleTtsSpeakLegacy(json: JSONObject) {
@@ -460,9 +505,11 @@ class PushWebSocketClient(
 
                 Log.d(TAG, "tts_speak (legacy): decoded ${pcmSrc.size} bytes → ${pcm16k.size} bytes (16kHz)")
 
-                // VideoAvatarEngineImpl 不支持推流式本地播放，跳过
+                // VideoAvatarEngineImpl 使用 AudioTrack 直接播放 PCM（无需下采样）
                 if (engine is com.yuanshi.avatar.engine.VideoAvatarEngineImpl) {
-                    Log.w(TAG, "tts_speak (legacy): VideoAvatarEngine does not support push playback, skipping")
+                    Log.w(TAG, "tts_speak (legacy): VideoAvatarEngine, using AudioTrack direct playback")
+                    playPcmViaAudioTrack(pcmSrc, sampleRate)
+                    Log.d(TAG, "tts_speak (legacy): playback finished (AudioTrack)")
                     return@execute
                 }
 

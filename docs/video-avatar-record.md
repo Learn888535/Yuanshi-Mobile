@@ -228,7 +228,10 @@ CallActivity.restartEngine(type: DigitalHumanEngineType)
 | 服务器重启后 404 | OLD sessionId 失效 | 已修复（speak 时自动重建）|
 | 切换引擎后"未配置" | `_preprocess_event` 未重置导致状态污染 | 已修复 |
 | 播报吞字 | TTS 24kHz→16kHz 重采样缺失 | 已修复（scipy resample_poly）|
-| 双 /api/v1 前缀 | Android URL 拼接与 backendUrl 重复 | 已修复（兼容路由）|
+| 双 /api/v1 前缀 | Android URL 拼接与 backendUrl 重复 | 已修复（`getCleanBackendUrl()` + 兼容路由）|
+| 工具调用后口型偏移 | 双 TTS 流重复 `startPush()` 导致 DUIX SDK 内部状态重置 | 已修复（`StreamingPusher` started 幂等标志）|
+| 视频引擎推送播报跳过 | `PushWebSocketClient` 检测到 VideoAvatarEngine 时直接跳过播报 | 已修复（AudioTrack 直接播放，两处推帧路径均生效）|
+| TOGGLE 模式无限视频循环 | `pendingReplyText` 为空时回退默认文字导致"你好，欢迎使用"视频无限重复 | 已修复（移除 `ifBlank` 回退，空文字跳过 speak）|
 
 ---
 

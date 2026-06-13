@@ -192,6 +192,7 @@ class CallActivity : BaseActivity() {
             launchLocalFilePicker(fileType)
             return
         }
+        val cleanUrl = getCleanBackendUrl()
         // 后台线程获取服务器文件列表
         Thread {
             try {
@@ -199,7 +200,7 @@ class CallActivity : BaseActivity() {
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(10, TimeUnit.SECONDS)
                     .build()
-                val url = "${backendUrl}/dashboard/audio-files?file_type=${fileType}"
+                val url = "${cleanUrl}/api/v1/dashboard/audio-files?file_type=${fileType}"
                 val request = Request.Builder().url(url).get().build()
                 val response = client.newCall(request).execute()
                 val body = response.body?.string()
@@ -268,6 +269,7 @@ class CallActivity : BaseActivity() {
     private fun downloadAndPlayServerAudio(fileId: Int, fileType: String) {
         val backendUrl = getRuntimeBackendUrl()
         if (backendUrl.isBlank()) return
+        val cleanUrl = getCleanBackendUrl()
         applyMessage("downloading server audio #$fileId...")
         Toast.makeText(this, "正在下载...", Toast.LENGTH_SHORT).show()
 
@@ -277,7 +279,7 @@ class CallActivity : BaseActivity() {
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build()
-                val url = "${backendUrl}/dashboard/audio-files/${fileId}/download"
+                val url = "${cleanUrl}/api/v1/dashboard/audio-files/${fileId}/download"
                 val request = Request.Builder().url(url).get().build()
                 val response = client.newCall(request).execute()
                 val body = response.body
@@ -481,6 +483,7 @@ class CallActivity : BaseActivity() {
                     applyMessage("后端引擎模式: $newProvider")
                     // 将 provider 设置发送到后端 API（使设置立即生效）
                     val backendUrl = getRuntimeBackendUrl()
+                    val cleanUrl = getCleanBackendUrl()
                     if (backendUrl.isNotBlank()) {
                         Thread {
                             try {
@@ -492,7 +495,7 @@ class CallActivity : BaseActivity() {
                                     .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
                                     .build()
                                 val request = Request.Builder()
-                                    .url("${backendUrl.trimEnd('/')}/api/v1/avatar/provider")
+                                    .url("${cleanUrl}/api/v1/avatar/provider")
                                     .put(jsonBody.toString().toRequestBody(
                                         "application/json; charset=utf-8".toMediaType()
                                     ))
@@ -1521,6 +1524,19 @@ class CallActivity : BaseActivity() {
     }
 
     /**
+     * 返回不含 /api/v1 的后端基础 URL。
+     * 统一所有组件的 URL 构造方式：基础 URL 不含 `/api/v1`，
+     * 需要 `/api/v1` 的路由在使用时显式拼接。
+     */
+    private fun getCleanBackendUrl(): String {
+        return getRuntimeBackendUrl()
+            .trimEnd('/')
+            .removeSuffix("/api/v1")
+            .removeSuffix("/api")
+            .removeSuffix("/v1")
+    }
+
+    /**
      * 将技术错误信息翻译为用户友好的中文提示。
      * 错误消息来源包括：RealtimeSessionManager、VoiceWebSocketClient、BackendVoiceInteractionClient。
      */
@@ -1649,7 +1665,7 @@ class CallActivity : BaseActivity() {
 
         realtimeManager = RealtimeSessionManager(
             config = RealtimeConfig(
-                backendBaseUrl = getRuntimeBackendUrl(),
+                backendBaseUrl = getCleanBackendUrl(),
                 apiKey = AppBuildConfig.DASHSCOPE_API_KEY,
                 baseUrl = AppBuildConfig.DASHSCOPE_BASE_URL,
                 ttsWsUrl = AppBuildConfig.DASHSCOPE_TTS_WS_URL,

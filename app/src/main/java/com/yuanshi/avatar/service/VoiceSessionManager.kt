@@ -396,7 +396,7 @@ private class BackendVoiceInteractionClient(
             .build()
         val response = httpClient.newCall(
             Request.Builder()
-                .url("${config.backendBaseUrl.trimEnd('/')}/voice/interaction")
+                .url("${config.backendBaseUrl.trimEnd('/')}/api/v1/voice/interaction")
                 .post(multipartBody)
                 .build()
         ).execute()
@@ -494,7 +494,7 @@ private class BackendVoiceInteractionClient(
             .build()
         val response = httpClient.newCall(
             Request.Builder()
-                .url("${config.backendBaseUrl.trimEnd('/')}/voice/interaction/stream")
+                .url("${config.backendBaseUrl.trimEnd('/')}/api/v1/voice/interaction/stream")
                 .post(multipartBody)
                 .build()
         ).execute()
@@ -888,11 +888,18 @@ private class StreamingPusher(
     private val callback: RealtimeSessionManager.Callback
 ) {
     private val inputBuf = ByteArrayOutputStream()
+    /** 防止重复调用 engine.startPush()（同一个会话中可能收到多个 tts_start） */
+    private var started = false
 
     fun start() {
+        if (started) {
+            callback.onInfo(">>> STREAM: already started, skipping startPush()")
+            return
+        }
         callback.onInfo(">>> STREAM: calling engine.startPush()")
         try {
             engine.startPush()
+            started = true
         } catch (e: Exception) {
             callback.onError("stream startPush error: ${e.message}")
         }
@@ -973,6 +980,8 @@ private class StreamingPusher(
             engine.stopPush()
         } catch (e: Exception) {
             callback.onError("stream stopPush error: ${e.message}")
+        } finally {
+            started = false
         }
     }
 }

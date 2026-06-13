@@ -198,7 +198,12 @@ class VideoAvatarEngineImpl(private val context: Context) : DigitalHumanEngine {
         val pcmSize = pcmBuffer.sumOf { it.size }
         pcmBuffer.clear()
 
-        val textToSpeak = pendingReplyText.ifBlank { "你好，欢迎使用智能关怀系统" }
+        val textToSpeak = pendingReplyText
+        if (textToSpeak.isBlank()) {
+            Log.i(TAG, "stopPush: skipped (no reply text, avoid default fallback loop)")
+            showPlaceholderText("未获取到回复内容")
+            return
+        }
         Log.i(TAG, "stopPush: 请求视频生成, text='${textToSpeak.take(40)}', pcm_size=${pcmSize}")
 
         // 显示更友好的状态信息
@@ -215,7 +220,7 @@ class VideoAvatarEngineImpl(private val context: Context) : DigitalHumanEngine {
                 val jsonBody = JSONObject().apply {
                     put("text", textToSpeak)
                 }
-                val url = "$baseUrl/avatar/sessions/$sid/speak"
+                val url = "$baseUrl/api/v1/avatar/sessions/$sid/speak"
                 val request = Request.Builder()
                     .url(url)
                     .post(jsonBody.toString().toRequestBody(JSON_MEDIA_TYPE))
@@ -272,7 +277,7 @@ class VideoAvatarEngineImpl(private val context: Context) : DigitalHumanEngine {
             if (sid != null) {
                 try {
                     val baseUrl = getBackendBaseUrl()
-                    val url = "$baseUrl/avatar/sessions/$sid"
+                    val url = "$baseUrl/api/v1/avatar/sessions/$sid"
                     httpClient.newCall(Request.Builder().url(url).delete().build()).execute()
                     Log.i(TAG, "release: 会话已关闭 sid=$sid")
                 } catch (e: Exception) {
@@ -468,7 +473,7 @@ class VideoAvatarEngineImpl(private val context: Context) : DigitalHumanEngine {
         val baseUrl = getBackendBaseUrl()
         Log.i(TAG, "createSession: $baseUrl")
         try {
-            val url = java.net.URL("$baseUrl/avatar/sessions")
+            val url = java.net.URL("$baseUrl/api/v1/avatar/sessions")
             val conn = url.openConnection() as java.net.HttpURLConnection
             conn.connectTimeout = 8000
             conn.readTimeout = 10000
@@ -526,7 +531,12 @@ class VideoAvatarEngineImpl(private val context: Context) : DigitalHumanEngine {
         val fromDialog = prefs.getString("backend_url", "") ?: ""
         val saved = if (fromDialog.isNotBlank()) fromDialog
             else prefs.getString("backend_base_url", "") ?: ""
-        return saved.ifBlank { AppBuildConfig.BACKEND_BASE_URL }
+        // 统一去除 /api/v1 后缀，所有路径拼接时显式添加
+        val raw = saved.ifBlank { AppBuildConfig.BACKEND_BASE_URL }
+        return raw.trimEnd('/')
+            .removeSuffix("/api/v1")
+            .removeSuffix("/api")
+            .removeSuffix("/v1")
     }
 
     companion object {
